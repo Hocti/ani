@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #blueBox {
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+            position: relative;
+            #innerBox {
+                width: 50px;
+                height: 50px;
+                background-color: yellow;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
+        #redBox {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="blueBox">
+        blue
+        <div id="innerBox">inner</div>
+    </div>
+    <div id="redBox">red</div>
+    <hr>
+    <button id="btn1">Test</button>
+    <button id="btn2">Pause</button>
+    <button id="btn3">speedup</button>
+    <button id="btn4">stop</button><br/>
+    <button id="btn5">red</button>
+    <button id="btn6">red2</button>
+    <button id="btn7">red3</button>
+
+    <script src="../dist/ani.js"></script>
+    <script>
+        let a;
+        document.querySelector('#btn1').addEventListener('click', function() {
+            //ani.start('#blueBox',{width: 200, height: 200, backgroundColor: 'red'}, 1000).hide();
+            console.log('btn1',performance.now())
+            a=ani.start('#innerBox',{width: 100, height: 100,opacity:0.5, backgroundColor: '#123432'}, 1000,()=>{
+                console.log('endInner',performance.now())
+            }).delay(1500,()=>{
+                console.log('end delay',performance.now())
+            }).do(()=>{
+                console.log('do',performance.now())
+            }).do(()=>{
+                console.log('do2',performance.now())
+            }).remove()
+            //ani.start('#redBox').hide();
+        });
+        
+        document.querySelector('#btn2').addEventListener('click', function() {
+            if(a){
+                if(a.is_pause)a.resume();
+                else a.pause();
+            }
+        });
+        
+        document.querySelector('#btn3').addEventListener('click', function() {
+            if(a){
+                a.speedup();
+            }
+        });
+        
+        document.querySelector('#btn4').addEventListener('click', function() {
+            if(a){
+                a.stop();
+            }
+        });
+
+        const q=ani.startQueue().css({marginTop:100,x:120},2000).delay(500).animate({marginTop:200,y:200},3000)
+        document.querySelector('#btn5').addEventListener('click', function() {
+            const a=ani.start('#redBox').joinQueue(q)
+            console.log('btn5',a)
+            //ani.start('#redBox').css({marginTop:100}).show().delay(500).animate({marginLeft:200,y:200},3000).fadeOut()
+        });
+
+        document.querySelector('#btn6').addEventListener('click', function() {
+            const a=ani.start('#redBox',{x:100}).animate({y:100}).animate({x:0}).animate({y:200,x:200})
+        });
+        document.querySelector('#btn7').addEventListener('click', function() {
+            const a=ani.start('#redBox',{left:100}).branch((b)=>{
+                b.animate({opacity:0}).animate({opacity:1,width:5},2000)
+                console.log(b)
+            }).mark('looper').animate({top:100}).animate({left:0}).animate({top:200,left:200,rotate:'90deg'}).do((a)=>a.speedup(4)).jump('looper',2).fadeOut()
+        });
+
+
+        //css,setAni,animate...
+        //mark+jump
+    </script>
+</body>
+</html>
