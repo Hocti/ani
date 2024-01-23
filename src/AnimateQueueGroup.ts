@@ -110,8 +110,8 @@ export default class AnimateQueueGroup{
     }
 
     //
-    cloneQueue():AnimateQueue[]{
-        return JSON.parse(JSON.stringify(this.queue)) as AnimateQueue[];
+    cloneQueue():AnimateQueueGroup{
+        return new AnimateQueueGroup().joinQueue(this);
     }
     joinQueue(q:AnimateQueueGroup):AnimateQueueGroup{
         this.queue=this.queue.concat(q.queue);

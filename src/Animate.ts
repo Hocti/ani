@@ -13,9 +13,11 @@ export default class Animate extends AnimateQueueGroup{
 
     private currQueue:number=0;
     private currentStepTime:number=0;
+    private looped:Record<number,number>={}
+    
+    private originStyle:string="";
     private originDisplay:string="";
     private originOpacity:number;
-    private looped:Record<number,number>={}
 
     private beforeAni:cssObject={};
     private targetAni:cssObject={};
@@ -24,6 +26,7 @@ export default class Animate extends AnimateQueueGroup{
     constructor(h:HTMLElement,cssObj?:cssObject,option?:number|aniOption,cb?:AnimateCall){
         super();
         this.element=h;
+        this.originStyle=h.getAttribute('style')||'';
         this.originDisplay=getComputedStyle(h).display;
         if(this.originDisplay=="none"){
             this.originDisplay="block";
@@ -39,6 +42,16 @@ export default class Animate extends AnimateQueueGroup{
         add2List(this);
     }
     //
+    reset(pause:boolean=false):Animate{
+        this.speed=1;
+        this.skipDelay=false;
+        this.is_pause=pause;
+        this.currQueue=0;
+        this.currentStepTime=0;
+        this.looped={};
+        this.element.setAttribute('style',this.originStyle);
+        return this;
+    }
     pause():Animate{
         this.is_pause=true;
         return this;

@@ -37,7 +37,9 @@
     <button id="btn1">Test</button>
     <button id="btn2">Pause</button>
     <button id="btn3">speedup</button>
-    <button id="btn4">stop</button><br/>
+    <button id="btn4">stop</button>
+    <button id="btn_reset">reset</button>
+    <br/>
     <button id="btn5">red</button>
     <button id="btn6">red2</button>
     <button id="btn7">red3</button>
@@ -48,7 +50,7 @@
         document.querySelector('#btn1').addEventListener('click', function() {
             //ani.start('#blueBox',{width: 200, height: 200, backgroundColor: 'red'}, 1000).hide();
             console.log('btn1',performance.now())
-            a=ani.start('#innerBox',{width: 100, height: 100,opacity:0.5, backgroundColor: '#123432'}, 1000,()=>{
+            a=ani.start('#innerBox',{width: 90, height: 130,opacity:0.5, backgroundColor: '#123432'}, 1000,()=>{
                 console.log('endInner',performance.now())
             }).delay(1500,()=>{
                 console.log('end delay',performance.now())
@@ -78,8 +80,14 @@
                 a.stop();
             }
         });
+        
+        document.querySelector('#btn_reset').addEventListener('click', function() {
+            if(a){
+                a.reset(true);
+            }
+        });
 
-        const q=ani.startQueue().css({marginTop:100,x:120},2000).delay(500).animate({marginTop:200,y:200},3000)
+        const q=ani.queue().css({marginTop:100,x:120},2000).delay(500).animate({marginTop:200,y:200},3000)
         document.querySelector('#btn5').addEventListener('click', function() {
             const a=ani.start('#redBox').joinQueue(q)
             console.log('btn5',a)
@@ -87,18 +95,50 @@
         });
 
         document.querySelector('#btn6').addEventListener('click', function() {
-            const a=ani.start('#redBox',{x:100}).animate({y:100}).animate({x:0}).animate({y:200,x:200})
+            const a=ani.start('#redBox').animate({x:'+=50',rotate:45}).animate({y:200,x:200}).animate({scaleY:1.5}).animate({scale:'*=2'}).speedup(0.5)
         });
         document.querySelector('#btn7').addEventListener('click', function() {
-            const a=ani.start('#redBox',{left:100}).branch((b)=>{
+            const a=ani.start('#redBox',{left:100}).show().branch((b)=>{
                 b.animate({opacity:0}).animate({opacity:1,width:5},2000)
                 console.log(b)
             }).mark('looper').animate({top:100}).animate({left:0}).animate({top:200,left:200,rotate:'90deg'}).do((a)=>a.speedup(4)).jump('looper',2).fadeOut()
         });
 
 
+const fromTraget={
+    x:5,
+    y:7,
+    scale:2,
+    display:'block'
+}
+const toTarget={
+    x:10,
+    y:'+=10',
+    scale:1,
+    scaleY:'*=-2',
+    width:'+=30',
+    rotate:-45,
+    display:'inline-block'
+}
+const margins={
+    marginTop:11,
+    marginLeft:'12px',
+    'margin-right':'-13rem',
+    'margin-bottom':'*=2',
+}
+
+redBox=document.querySelector('#redBox')
+ani.css(redBox,{margin:10})
+ani.css(redBox,margins)
+//ani.start('#redBox').fadeIn().delay(500).css({width:'*=2',x:'+=4',height:100}).fadeOut({duration:700,easing:ani.time.easeInQuad}).remove()
+
+/*
+    ani.css(redBox,fromTraget)
+    ani.css(redBox,toTarget)
+    ani.getCss(redBox,toTarget)
         //css,setAni,animate...
         //mark+jump
+        */
     </script>
 </body>
 </html>
