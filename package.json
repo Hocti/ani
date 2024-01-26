@@ -1,6 +1,6 @@
 {
 	"name": "ani-lib",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Tiny animation library like jquery animate function chain, with more features",
 	"module": "./dist/ani.esm.js",
 	"bundle": "./dist/ani.js",

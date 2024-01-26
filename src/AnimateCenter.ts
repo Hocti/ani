@@ -31,7 +31,7 @@ const stop=(h:HTMLElement|string):void=>{
     }
     for(let a of animates){
         if(a!=undefined && a.element==h){
-            a.stop();
+            a.stopNow();
         }
     }
 }
@@ -59,6 +59,6 @@ function etf(f: number):void{
     lastTime=f;
     window.requestAnimationFrame(etf)
 }
-etf(0);
+window.requestAnimationFrame(etf)
 
 export {start,stop,queue}

@@ -23,7 +23,8 @@ const esbuildConfig = {
     },
     treeShaking: true,
     minify: isProduction,
-    tsconfigRaw: '{"compilerOptions":{"useDefineForClassFields":false}}'
+    tsconfigRaw: '{"compilerOptions":{"useDefineForClassFields":false}}',
+    drop: isProduction?['console', 'debugger']:[],
 }
 
 const plugins = [

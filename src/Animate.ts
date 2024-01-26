@@ -2,7 +2,7 @@ import AnimateQueueGroup from "./AnimateQueueGroup";
 import { cssObject, QueueType, timeOption, aniOption, queueWithTime,queueWithAnimate, jumpOption,AnimateCall } from "./types";
 import { css,getCss,getTargetCss ,middleCss } from "./cssHelper";
 import { clamp } from "./utils";
-import { add2List } from "./center";
+import { add2List } from "./AnimateCenter";
 
 export default class Animate extends AnimateQueueGroup{
     
@@ -42,7 +42,12 @@ export default class Animate extends AnimateQueueGroup{
         add2List(this);
     }
     //
-    reset(pause:boolean=false):Animate{
+    hideNow():this{
+        this.setDisplay(false);
+        return this;
+    }
+    //
+    resetNow(pause:boolean=false):this{
         this.speed=1;
         this.skipDelay=false;
         this.is_pause=pause;
@@ -52,29 +57,30 @@ export default class Animate extends AnimateQueueGroup{
         this.element.setAttribute('style',this.originStyle);
         return this;
     }
-    pause():Animate{
+    pauseNow():this{
         this.is_pause=true;
         return this;
     }
-    resume():Animate{
+    jumpNow(markname:string):this{
+        return this;
+    }
+
+    resumeNow():this{
         this.is_pause=false;
         return this;
     }
-    speedup(_speed:number=3):Animate{
+    speedupNow(_speed:number=3):this{
         this.speed=_speed;
         this.skipDelay=true;
         return this;
     }
-    stop():void{
+    stopNow():void{
         this.queue=[];
         this.currQueue=0;
         this.is_pause=false;
         this.currentStepTime=0;
         this.speed=1;
         this.skipDelay=false;
-    }
-    jumpNow(markname:string):Animate{
-        return this;
     }
     //
     private nextQueue():void{
@@ -109,7 +115,6 @@ export default class Animate extends AnimateQueueGroup{
         const queue=this.queue[this.currQueue];
         
         if(queueWithTime.indexOf(queue.type)>=0){
-            const timepass=f*this.speed;
             const duration=(queue.option as timeOption).duration!;
             const progress=clamp(this.currentStepTime/duration,0,1);
 
@@ -124,8 +129,9 @@ export default class Animate extends AnimateQueueGroup{
                     }
                 }else if(queue.type==QueueType.fadeIn){
                     if(progress==0){
+                        const startOpacity=this.element.style.display==='none'?0:parseFloat(getComputedStyle(this.element).opacity);
                         this.setDisplay(true);
-                        this.beforeAni={opacity:parseFloat(getComputedStyle(this.element).opacity)};
+                        this.beforeAni={opacity:startOpacity};
                         this.targetAni={opacity:this.originOpacity};
                     }
                 }else if(queue.type==QueueType.fadeOut){
@@ -146,7 +152,7 @@ export default class Animate extends AnimateQueueGroup{
                     return;
                 }
             }else if(queue.type==QueueType.delay){
-                if(this.skipDelay || progress==1){
+                if(this.skipDelay || progress===1){
                     if(queue.cb){
                         queue.cb(this);
                     }
@@ -156,7 +162,7 @@ export default class Animate extends AnimateQueueGroup{
                 }
             }
 
-            this.currentStepTime+=timepass;
+            this.currentStepTime+=f*this.speed;
         }else{
             if(queue.type==QueueType.show){
                 this.setDisplay(true)
@@ -176,6 +182,14 @@ export default class Animate extends AnimateQueueGroup{
                 if(mark && (looptime<0 || this.looped[this.currQueue]<=looptime)){
                     this.currQueue=mark;
                 }
+            }else if(queue.type==QueueType.pause){
+                this.is_pause=true;
+                this.nextQueue();
+                return
+            }else if(queue.type==QueueType.reset){
+                this.resetNow();
+                this.process(f);
+                return
             }else if(queue.type==QueueType.branch){
                 queue.cb!(new Animate(this.element));
             }else if(queue.type==QueueType.remove){

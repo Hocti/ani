@@ -20,7 +20,7 @@ const processOption=(option?:number|aniOption|undefined):aniOption=>{
 export default class AnimateQueueGroup{
     queue:AnimateQueue[]=[];
     marks:Map<string,number>=new Map();
-    animate(cssObj?:cssObject,option?:number|aniOption,cb?:AnimateCall):AnimateQueueGroup{
+    animate(cssObj?:cssObject,option?:number|aniOption,cb?:AnimateCall):this{
         this.queue.push({
             type:QueueType.animate,
             cssObj,
@@ -29,7 +29,7 @@ export default class AnimateQueueGroup{
         })
         return this;
     }
-    delay(time:number,cb?:AnimateCall):AnimateQueueGroup{
+    delay(time:number,cb?:AnimateCall):this{
         this.queue.push({
             type:QueueType.delay,
             option:{
@@ -39,40 +39,40 @@ export default class AnimateQueueGroup{
         })
         return this;
     }
-    do(cb?:AnimateCall):AnimateQueueGroup{
+    do(cb?:AnimateCall):this{
         this.queue.push({
             type:QueueType.do,
             cb
         })
         return this;
     }
-    css(cssObj?:cssObject):AnimateQueueGroup{
+    css(cssObj?:cssObject):this{
         this.queue.push({
             type:QueueType.css,
             cssObj
         })
         return this;
     }
-    show():AnimateQueueGroup{
+    show():this{
         this.queue.push({
             type:QueueType.show
         })
         return this;
     }
-    hide():AnimateQueueGroup{
+    hide():this{
         this.queue.push({
             type:QueueType.hide
         })
         return this;
     }
-    fadeIn(time:number=700):AnimateQueueGroup{
+    fadeIn(time:number=700):this{
         this.queue.push({
             type:QueueType.fadeIn,
             option:processOption(time)
         })
         return this;
     }
-    fadeOut(time:number=700):AnimateQueueGroup{
+    fadeOut(time:number=700):this{
         this.queue.push({
             type:QueueType.fadeOut,
             option:processOption(time)
@@ -80,25 +80,25 @@ export default class AnimateQueueGroup{
         return this;
     }
     
-    branch(cb:AnimateCall):AnimateQueueGroup{
+    branch(cb:AnimateCall):this{
         this.queue.push({
             type:QueueType.branch,
             cb
         })
         return this;
     }
-    remove(){
+    remove():this{
         this.queue.push({
             type:QueueType.remove
         })
         return this;
     }
 
-    mark(name:string):AnimateQueueGroup{
+    mark(name:string):this{
         this.marks.set(name,this.queue.length);
         return this;
     }
-    jump(markname:string,looptime:number=1):AnimateQueueGroup{
+    jump(markname:string,looptime:number=1):this{
         this.queue.push({
             type:QueueType.jump,
             option:{
@@ -108,12 +108,24 @@ export default class AnimateQueueGroup{
         })
         return this;
     }
+    pause():this{
+        this.queue.push({
+            type:QueueType.pause
+        })
+        return this;
+    }
+    reset():this{
+        this.queue.push({
+            type:QueueType.reset
+        })
+        return this;
+    }
 
     //
     cloneQueue():AnimateQueueGroup{
         return new AnimateQueueGroup().joinQueue(this);
     }
-    joinQueue(q:AnimateQueueGroup):AnimateQueueGroup{
+    joinQueue(q:AnimateQueueGroup):this{
         this.queue=this.queue.concat(q.queue);
         return this;
     }

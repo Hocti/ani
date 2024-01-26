@@ -1,6 +1,6 @@
-import {start,stop,queue} from './center'
-export {start,stop,queue}
+export {start,stop,queue} from './AnimateCenter'
 export {css,getCss} from './cssHelper'
 import time from './TimeFunction'
 export {time}
-//export * from './cssHelper'
+import Animate from './Animate'
+export {Animate}

@@ -12,6 +12,8 @@ export enum QueueType{
     hide,
     jump,
     branch,
+    pause,
+    reset,
     remove,
 }
 
@@ -25,7 +27,7 @@ export const queueWithTime=[
     QueueType.delay,
 ]
 
-export type AnimateCall=(a:Animate)=>Animate;
+export type AnimateCall=(a:Animate)=>void;
 
 export type AnimateQueue={
     type:QueueType,

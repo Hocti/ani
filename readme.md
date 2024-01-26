@@ -32,6 +32,11 @@ Then, include Ani in your project:
 import ani from 'ani-lib';
 ```
 
+Or, Just using jsdelivr
+```
+<script src="https://cdn.jsdelivr.net/npm/ani-lib@latest/dist/ani.js"></script>
+```
+
 ## Usage
 
 ### Starting an Animation
@@ -101,6 +106,8 @@ ani.stop('#myElement');
 - `branch(callback)`: Creates a branch in the animation sequence.
 - `mark(name)`: Marks a position in the queue.
 - `jump(markname, looptime?)`: Jumps to a marked position in the queue.
+- `pause()`: pause animation.
+- `reset()`: reset animation.
 - `remove()`: Removes the element from parent and end the animation
 
 #### other methods
@@ -116,11 +123,11 @@ Inherits all methods from `AnimateQueueGroup` and adds:
 - `speed`:number: default 1
 - `skipDelay`:boolean: skip all delay quene
 #### methods (effective immediately)
-- `reset(pause?)`: Resets the animation.
-- `pause()`: Pauses the animation.
-- `resume()`: Resumes the animation.
-- `speedup(_speed?)`: Changes the animation speed and turn on `skipDelay`.
-- `stop()`: Stops the animation.
+- `resetNow(pause?)`: Resets the animation.
+- `pauseNow()`: Pauses the animation.
+- `resumeNow()`: Resumes the animation.
+- `speedupNow(_speed?)`: Changes the animation speed and turn on `skipDelay`.
+- `stopNow()`: Stops the animation.
 - `jumpNow(markname)`: Immediately jumps to a marked position.
 
 ### `cssObj`
@@ -130,8 +137,14 @@ Inherits all methods from `AnimateQueueGroup` and adds:
     marginLeft:'10px',
     'margin-right':'-10',
     'margin-bottom':'*=2',
+    scaleX:3,
+    scaleY:'+=100',
+    x:10,
+    rotate:30
 }
 ```
+number would auto filling 'px'/'deg' as unit (unless it's scale or opacity)
+
 ### `option`
 number(default 700)
 or
@@ -142,10 +155,20 @@ or
 }
 ```
 
-## TBC
+## update
 
+added 
+```
+x,y,z
 scaleX,scaleY,scaleZ
 RotateX,RotateY,RotateZ
+```
+(auto transform to css transform,scale,rotate)
+
+added difficult unit animation
+```
+ani.start('#redBox').css({left:'10cm'}).animate({left:'10in'})
+```
 
 ## License
 
