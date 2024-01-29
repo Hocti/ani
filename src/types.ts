@@ -6,6 +6,7 @@ export enum QueueType{
     fadeIn,
     fadeOut,
 
+    speedup,
     do,
     css,
     show,
@@ -44,7 +45,7 @@ export type jumpOption={
     markname:string,
     looptime:number,
 }
-export type aniOption=timeOption | jumpOption;
+export type aniOption=timeOption | jumpOption | number;
 
 export type cssObject=Record<string,string|number|undefined>;
 export type stringDict=Record<string,string>;

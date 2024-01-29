@@ -108,11 +108,12 @@ ani.stop('#myElement');
 - `jump(markname, looptime?)`: Jumps to a marked position in the queue.
 - `pause()`: pause animation.
 - `reset()`: reset animation.
+- `speedup(speed?)`: speedup animation.
 - `remove()`: Removes the element from parent and end the animation
 
 #### other methods
-- `cloneQueue()`: Clones the current queue.
-- `joinQueue(q)`: Joins another queue.
+- `cloneQueue():AnimateQueueGroup`: Clones the current queue.
+- `joinQueue(q:AnimateQueueGroup)`: Joins another queue.
 
 ### `Animate` Class
 
@@ -123,24 +124,22 @@ Inherits all methods from `AnimateQueueGroup` and adds:
 - `speed`:number: default 1
 - `skipDelay`:boolean: skip all delay quene
 #### methods (effective immediately)
-- `resetNow(pause?)`: Resets the animation.
-- `pauseNow()`: Pauses the animation.
-- `resumeNow()`: Resumes the animation.
-- `speedupNow(_speed?)`: Changes the animation speed and turn on `skipDelay`.
-- `stopNow()`: Stops the animation.
-- `jumpNow(markname)`: Immediately jumps to a marked position.
+- `now`: immediately run last command, not adding to the queue, e.g. `ani.start('#box',{x:200}).animate({x:100}).css({x:50}).now.animate({x:300})` ，would set x to 50 first,then animate to 200->100->300, but not for quene require time to run(animate,delay,fadeIn/Out)
+- `resume()`: Resumes the pasued animation.
+- `stop()`: Stops and end the animation.
 
 ### `cssObj`
 ```typescript
 {
-    marginTop:10,
-    marginLeft:'10px',
-    'margin-right':'-10',
-    'margin-bottom':'*=2',
-    scaleX:3,
-    scaleY:'+=100',
-    x:10,
-    rotate:30
+  opacity:0.7
+  marginTop:10,
+  marginLeft:'10em',  
+  'margin-right':'-10',
+  'margin-bottom':'*=2',
+  scaleX:3,
+  scaleY:'+=0.5',
+  x:10,
+  rotate:30
 }
 ```
 number would auto filling 'px'/'deg' as unit (unless it's scale or opacity)
@@ -150,7 +149,7 @@ number(default 700)
 or
 ```typescript
 {
-    duration:700,
+    duration:1200,
     easing:ani.time.easeInQuad
 }
 ```
@@ -169,6 +168,8 @@ added difficult unit animation
 ```
 ani.start('#redBox').css({left:'10cm'}).animate({left:'10in'})
 ```
+
+added `now` to call method immediately, and remove `hideNow`,`jumpNow` etc
 
 ## License
 

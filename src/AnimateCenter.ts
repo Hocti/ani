@@ -31,7 +31,7 @@ const stop=(h:HTMLElement|string):void=>{
     }
     for(let a of animates){
         if(a!=undefined && a.element==h){
-            a.stopNow();
+            a.stop();
         }
     }
 }

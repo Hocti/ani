@@ -9,6 +9,9 @@ const processOption=(option?:number|aniOption|undefined):aniOption=>{
         }
     }
     if(typeof option=="number"){
+        if(option<=0){
+            throw new Error("duration must be greater than 0")
+        }
         return {
             duration:option, 
             easing:TimeFunction.easeInQuad
@@ -76,6 +79,16 @@ export default class AnimateQueueGroup{
         this.queue.push({
             type:QueueType.fadeOut,
             option:processOption(time)
+        })
+        return this;
+    }
+    speedup(_speed:number=3):this{
+        if(_speed<=0){
+            throw new Error("speed must be greater than 0")
+        }
+        this.queue.push({
+            type:QueueType.speedup,
+            option:_speed
         })
         return this;
     }

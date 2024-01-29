@@ -1,8 +1,9 @@
 import AnimateQueueGroup from "./AnimateQueueGroup";
-import { cssObject, QueueType, timeOption, aniOption, queueWithTime,queueWithAnimate, jumpOption,AnimateCall } from "./types";
+import { cssObject, QueueType,AnimateQueue, timeOption, aniOption, queueWithTime,queueWithAnimate, jumpOption,AnimateCall } from "./types";
 import { css,getCss,getTargetCss ,middleCss } from "./cssHelper";
 import { clamp } from "./utils";
 import { add2List } from "./AnimateCenter";
+
 
 export default class Animate extends AnimateQueueGroup{
     
@@ -21,7 +22,6 @@ export default class Animate extends AnimateQueueGroup{
 
     private beforeAni:cssObject={};
     private targetAni:cssObject={};
-
 
     constructor(h:HTMLElement,cssObj?:cssObject,option?:number|aniOption,cb?:AnimateCall){
         super();
@@ -42,12 +42,18 @@ export default class Animate extends AnimateQueueGroup{
         add2List(this);
     }
     //
-    hideNow():this{
-        this.setDisplay(false);
+    public get now():this{
+        const lastQ=this.queue.pop();
+        if(lastQ){
+            if(queueWithTime.indexOf(lastQ.type)>=0){
+                throw new Error("can't get run command with time immediately")
+            }
+            this.processNow(lastQ);
+        }
         return this;
     }
-    //
-    resetNow(pause:boolean=false):this{
+
+    private resetNow(pause:boolean=false):this{
         this.speed=1;
         this.skipDelay=false;
         this.is_pause=pause;
@@ -56,31 +62,6 @@ export default class Animate extends AnimateQueueGroup{
         this.looped={};
         this.element.setAttribute('style',this.originStyle);
         return this;
-    }
-    pauseNow():this{
-        this.is_pause=true;
-        return this;
-    }
-    jumpNow(markname:string):this{
-        return this;
-    }
-
-    resumeNow():this{
-        this.is_pause=false;
-        return this;
-    }
-    speedupNow(_speed:number=3):this{
-        this.speed=_speed;
-        this.skipDelay=true;
-        return this;
-    }
-    stopNow():void{
-        this.queue=[];
-        this.currQueue=0;
-        this.is_pause=false;
-        this.currentStepTime=0;
-        this.speed=1;
-        this.skipDelay=false;
     }
     //
     private nextQueue():void{
@@ -100,6 +81,20 @@ export default class Animate extends AnimateQueueGroup{
         }else{
             css(this.element,{display:'none'});//hide
         }
+    }
+
+    stop():void{
+        this.queue=[];
+        this.currQueue=0;
+        this.is_pause=false;
+        this.currentStepTime=0;
+        this.speed=1;
+        this.skipDelay=false;
+    }
+
+    resume():this{
+        this.is_pause=false;
+        return this;
     }
     
     process(f:number):boolean|undefined{//async 
@@ -126,6 +121,7 @@ export default class Animate extends AnimateQueueGroup{
                     if(progress==0){
                         this.beforeAni=getCss(this.element,queue.cssObj!);
                         this.targetAni=getTargetCss(this.element,queue.cssObj!);
+                        console.log('aniBegin',this.beforeAni,this.targetAni)
                     }
                 }else if(queue.type==QueueType.fadeIn){
                     if(progress==0){
@@ -164,42 +160,50 @@ export default class Animate extends AnimateQueueGroup{
 
             this.currentStepTime+=f*this.speed;
         }else{
-            if(queue.type==QueueType.show){
-                this.setDisplay(true)
-            }else if(queue.type==QueueType.hide){
-                this.setDisplay(false)
-            }else if(queue.type==QueueType.do){
-                queue.cb!(this);
-            }else if(queue.type==QueueType.css){
-                css(this.element,queue.cssObj!);
-            }else if(queue.type==QueueType.jump){
-                const mark=this.marks.get((queue.option! as jumpOption).markname);
-                const looptime=(queue.option! as jumpOption)!.looptime;
-                if(!this.looped[this.currQueue]){
-                    this.looped[this.currQueue]=0;
-                }
-                this.looped[this.currQueue]++;
-                if(mark && (looptime<0 || this.looped[this.currQueue]<=looptime)){
-                    this.currQueue=mark;
-                }
-            }else if(queue.type==QueueType.pause){
-                this.is_pause=true;
+            const stop=this.processNow(queue);
+            if(!stop){
                 this.nextQueue();
-                return
-            }else if(queue.type==QueueType.reset){
-                this.resetNow();
                 this.process(f);
-                return
-            }else if(queue.type==QueueType.branch){
-                queue.cb!(new Animate(this.element));
-            }else if(queue.type==QueueType.remove){
-                this.queue=undefined!;
-                this.element.parentElement!.removeChild(this.element);
-                this.element=undefined!;
-                return true;
             }
-            this.nextQueue();
-            this.process(f);
         }
+    }
+
+    processNow(queue:AnimateQueue):boolean{
+        if(queue.type==QueueType.show){
+            this.setDisplay(true)
+        }else if(queue.type==QueueType.hide){
+            this.setDisplay(false)
+        }else if(queue.type==QueueType.do){
+            queue.cb!(this);
+        }else if(queue.type==QueueType.css){
+            css(this.element,queue.cssObj!);
+        }else if(queue.type==QueueType.speedup){
+            this.speed=queue.option as number;
+        }else if(queue.type==QueueType.branch){
+            queue.cb!(new Animate(this.element));
+        }else if(queue.type==QueueType.jump){
+            const mark=this.marks.get((queue.option! as jumpOption).markname);
+            const looptime=(queue.option! as jumpOption)!.looptime;
+            if(!this.looped[this.currQueue]){
+                this.looped[this.currQueue]=0;
+            }
+            this.looped[this.currQueue]++;
+            if(mark && (looptime<0 || this.looped[this.currQueue]<=looptime)){
+                this.currQueue=mark;
+            }
+        }else if(queue.type==QueueType.pause){
+            this.is_pause=true;
+            this.nextQueue();
+            return true;
+        }else if(queue.type==QueueType.reset){
+            this.resetNow();
+            return true;
+        }else if(queue.type==QueueType.remove){
+            this.queue=undefined!;
+            this.element.parentElement!.removeChild(this.element);
+            this.element=undefined!;
+            return true;
+        }
+        return false;
     }
 }
