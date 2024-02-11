@@ -121,7 +121,7 @@ export default class Animate extends AnimateQueueGroup{
                     if(progress==0){
                         this.beforeAni=getCss(this.element,queue.cssObj!);
                         this.targetAni=getTargetCss(this.element,queue.cssObj!);
-                        console.log('aniBegin',this.beforeAni,this.targetAni)
+                        //console.log('aniBegin',this.beforeAni,this.targetAni)
                     }
                 }else if(queue.type==QueueType.fadeIn){
                     if(progress==0){
@@ -188,8 +188,9 @@ export default class Animate extends AnimateQueueGroup{
                 this.looped[this.currQueue]=0;
             }
             this.looped[this.currQueue]++;
-            if(mark && (looptime<0 || this.looped[this.currQueue]<=looptime)){
+            if(mark!=undefined && (looptime<=0 || this.looped[this.currQueue]<=looptime)){
                 this.currQueue=mark;
+                return true;
             }
         }else if(queue.type==QueueType.pause){
             this.is_pause=true;

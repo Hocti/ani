@@ -16,73 +16,6 @@ export function toCamelCase(cssProperty:string):string {
 export function toHyphenated(cssProperty:string):string {
   return cssProperty.replace(/([A-Z])/g, '-$1').toLowerCase();
 }
-
-function splitCssString(cssString:string) {
-  if(typeof cssString!='string'){
-    throw new Error('cssString is not string '+cssString)
-  }
-  const regex = /(\b[a-z]+\([^)]*\))|\S+/gi;
-  return cssString.match(regex);
-}
-
-function processSplited(v:string):cssPart{
-  const c=categorizeCssValue(v)
-  if(c.type=='function'){
-      if(c.function=='rgb'){
-          c.function='rgba';
-          c.args!.push({
-              type:'number',
-              value:1,
-              unit:undefined,
-          });
-      }
-  }
-  return c;
-}
-
-function categorizeCssValue(value:string):cssPart {
-  // Check if the value is a number (with or without a unit)
-  const numberMatch = value.match(/^(\-?\d+(?:\.\d+)?)([a-z%]*)$/);
-  if (numberMatch) {
-    return {
-      type: 'number',
-      value: parseFloat(numberMatch[1]),
-      unit: numberMatch[2] || undefined
-    };
-  }
-
-  // Check if the value is a function
-  const functionMatch = value.match(/^([a-z]+)\((.*)\)$/i);
-  if (functionMatch) {
-    const functionName = functionMatch[1];
-    const args_str = functionMatch[2].split(/,\s*/);
-    const args:cssPart[]=[];
-    for(let i in args_str){
-        args.push(categorizeCssValue(args_str[i]))
-    }
-    return {
-      type: 'function',
-      function: functionName,
-      args
-    };
-  }
-
-  // If neither, classify as 'other'
-  return {
-    type: 'other',
-    value: value
-  };
-}
-
-function parseCssValueString(s:string):cssPart[]{
-  const result:cssPart[]=[];
-  splitCssString(s)?.forEach((v,k)=>{
-      result.push(processSplited(v))
-  })
-  return result;
-}
-
-
 function checkRelate(value:string):{mathType:string,value:number}|undefined{
   const relate = value.match(/^([+-\/\*])=([-]?[\d].?[\d]?)$/);
   if (relate) {
@@ -111,7 +44,7 @@ const transslateKey=['x','y','z'];
 const transformKey=['rotate','scale','translate'];
 const degKey=['rotate','rotateX','rotateY','rotateZ'];
 const xyzKey=[...transslateKey,'rotateX','scaleX','rotateY','scaleY','rotateZ','scaleZ'];
-const withoutUnit=['opacity','scale','scaleX','scaleY','scaleZ'];
+const withoutUnit=['opacity','background','scale','scaleX','scaleY','scaleZ'];
 
 
 
@@ -128,79 +61,8 @@ function middleNumber(from:string|number,to:string|number,progressRate:number):n
 
 
 
-function checkFormatMatch(obj1:cssPart[],obj2:cssPart[]):boolean{
-  if(obj1.length!=obj2.length){
-      return false;
-  }
-  for(let i in obj1){
-      if(obj1[i].type!=obj2[i].type){
-          return false;
-      }
-      if(obj1[i].type=='function'){
-          if(obj1[i].function!=obj2[i].function){
-              return false;
-          }
-          if(!checkFormatMatch(obj1[i].args!,obj2[i].args!)){
-              return false;
-          }
-      }
-  }
-  return true;
-}
-
-function cssParts2String(cp:cssPart[]):string{
-  let result:string[]=[];
-  for(let i in cp){
-      result.push(cssPart2String(cp[i]));
-  }
-  return result.join(' ').trim();
-}
-
-function cssPart2String(cp:cssPart):string{
-  let result='';
-  if(cp.type=='number'){
-      result+=cp.value!+(cp.unit?cp.unit:'')+' ';
-  }else if(cp.type=='function'){
-      result+=cp.function+'(';
-      for(let i=0,t=cp.args!.length;i<t;i++){
-          result+=cssPart2String(cp.args![i]);
-          if(i!=t -1){
-              result+=', ';
-          }
-      }
-      result+=') ';
-  }else{
-      result+=cp.value+' ';
-  }
-  return result;
-}
 
 
-function mixObj(obj1:cssPart[],obj2:cssPart[],progress:number):cssPart[]{
-  const result:cssPart[]=[];
-  for(let i in obj1){
-      if(!obj1[i]){
-          console.error('sfdgundefined',obj1,obj2)
-          throw new Error('obj1[i] is undefined')
-      }
-      if(obj1[i].type=='number'){
-          result.push({
-              type:'number',
-              value:middleNumber(obj1[i].value as number,obj2[i].value as number,progress),
-              unit:obj1[i].unit
-          })
-      }else if(obj1[i].type=='function'){
-          result.push({
-              type:'function',
-              function:obj1[i].function,
-              args:mixObj(obj1[i].args!,obj2[i].args!,progress)//?.map((v,k)=>mixObj(v,obj2[i].args![k],progress))
-          })
-      }else{
-          result.push(obj1[i])
-      }
-  }
-  return result;
-}
 
 function currentValue(element:HTMLElement,key:string):string{
   const newkey=toCamelCase(key) as any;
@@ -304,7 +166,7 @@ export const getCss=(h:HTMLElement,cssObj:cssObject):cssObject=>{
       if(rotate)result['rotate']=rotate;
     }
   }
-  console.log('getCss',result)
+  //console.log('getCss',result)
   return result;
 }
 
@@ -328,17 +190,19 @@ const autoUnit=(v:string|number|undefined,unittype:string=''):string|number|unde
   */
   if(typeof v === 'number' || (typeof v === 'string' && !isNaN(parseFloat(v)))){
     if(withoutUnit.indexOf(unittype)>=0){
-      return parseFloat(v as string).toString();
+      return (v as string).toString();
+      //return parseFloat(v as string).toString();
     }
     if(degKey.indexOf(unittype)>=0){
       return parseFloat(v as string)+'deg';
     }
     if(typeof v === 'string'){
-      const m=v.match(/^([\d.]+)([a-z]+)$/)
+      const m=v.replace(/[\,\)]+$/g, '').match(/^([\d.]+)([a-z\%]+)$/)
       if(m && m[2]){
         return v;
       }
     }
+    //console.log(unittype,v)
     return v+'px';
   }
   return v;
@@ -465,34 +329,57 @@ export const middleCss=(h:HTMLElement,cssFrom:cssObject,cssTo:cssObject,progress
 
     const cssmix:cssObject={};
     for(let k in cssTo){
-      let value=cssTo[k];
+      let toValue=cssTo[k];
       let fromValue=cssFrom[k];
+      let finalValue:string=toValue as string;
       const kk=toCamelCase(k) as any;
       
-      if(typeof value=='number'){
+      
+      
+      if(typeof toValue=='number'){
         if(!fromValue){
           fromValue=0;
         }
         if(typeof fromValue=='number'){
-          value=middleNumber(fromValue,value,progressRate);
+          finalValue=middleNumber(fromValue,toValue,progressRate).toString();
         }
-      }else if(typeof value=='string'){
-        //*?
-        const o2=parseCssValueString(value)
-        if(!fromValue && o2.length==1 && o2[0].type=='number'){
-          fromValue=`0${o2[0].unit}`
-        }
-        //console.log(kk,fromValue,value)
-        if(typeof fromValue=='string'){
-          const o1=parseCssValueString(fromValue)
-          if(checkFormatMatch(o1,o2)){
-            value=cssParts2String(mixObj(o1,o2,progressRate))
+      }else if(typeof toValue=='string' && typeof fromValue=='string'){
+
+        const toRaw:(number|string)[]=toValue.split(/([\d.]*)([^\d]*)/g).filter((v:string)=>v!=="").map((v:string)=>isNaN(parseFloat(v))?v:parseFloat(v))
+        const fromRaw:(number|string)[]=fromValue.split(/([\d.]*)([^\d]*)/g).filter((v:string)=>v!=="").map((v:string)=>isNaN(parseFloat(v))?v:parseFloat(v))
+        const finalRaw:(number|string)[]=[];
+
+        let formatMatch=true;
+        if(toRaw.length===fromRaw.length){
+          for(let i=0;i<toRaw.length;i++){
+            if(typeof toRaw[i]!==typeof fromRaw[i]){
+              formatMatch=false
+              break;
+            }
+            if(toRaw[i]==fromRaw[i]){
+              finalRaw.push(toRaw[i])
+            }else if(typeof toRaw[i]=='number'){//num
+              finalRaw.push(middleNumber(fromRaw[i],toRaw[i],progressRate))
+            }else{//string
+              finalRaw.push(progressRate>0.5?toRaw[i]:fromRaw[i])
+            }
           }
+        }else{
+          formatMatch=false
         }
 
+        if(formatMatch){
+          finalValue=finalRaw.join('');
+        }else if(progressRate>0.5){
+          finalValue=toValue as string;
+        }else{
+          finalValue=fromValue as string;
+        }
+        //console.log(formatMatch,fromValue,toValue,finalValue)
       }
-      cssmix[kk]=value as string;
+      cssmix[kk]=finalValue;
     }
     css(h,cssmix);
+  
   }
 }

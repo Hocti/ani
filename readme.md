@@ -63,8 +63,10 @@ ani.start('#myElement').fadeIn().delay(500).css({width:'*=2',x:'+=4',height:100}
 //branch
 ani.start('#myElement').css({width:100,height:100}).branch((a)=>{a.animate({width:200},3000)}).animate({height:200},6000);
 
-//
-ani.start('#myElement').css({width:100,height:100}).branch((a)=>{a.animate({width:200},3000)}).animate({height:200},6000);
+//background gradient animation forever loop
+const fromSTR=`radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)`;
+const TOSTR=  `radial-gradient(circle, rgba(60,60,129,1) 0%, rgba(0,212,255,1) 63%, rgba(2,0,36,1) 100%)`;
+ani.start('#bg').css({background: fromSTR}).now.mark('start').animate({background: TOSTR},2000).animate({background: fromSTR},2000).jump('start',0)
 ```
 
 ### Queueing Animations
@@ -105,7 +107,7 @@ ani.stop('#myElement');
 - `fadeOut(time?)`: Fades the element out.
 - `branch(callback)`: Creates a branch in the animation sequence.
 - `mark(name)`: Marks a position in the queue.
-- `jump(markname, looptime?)`: Jumps to a marked position in the queue.
+- `jump(markname, looptime?=1)`: Jumps to a marked position in the queue. (looptime 0 mean forever)
 - `pause()`: pause animation.
 - `reset()`: reset animation.
 - `speedup(speed?)`: speedup animation.
@@ -170,6 +172,9 @@ ani.start('#redBox').css({left:'10cm'}).animate({left:'10in'})
 ```
 
 added `now` to call method immediately, and remove `hideNow`,`jumpNow` etc
+```
+
+added `background gradient` transform support
 
 ## License
 
