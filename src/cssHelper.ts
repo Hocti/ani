@@ -1,13 +1,5 @@
 import {cssObject,stringDict} from './types';
 
-type cssPart={
-  type:'number'|"function"|"other",
-  function?:string,
-  args?:cssPart[]
-  value?:number|string,
-  unit?:string,
-}
-
 export function toCamelCase(cssProperty:string):string {
   return cssProperty.replace(/-([a-z])/g, function (g) { 
       return g[1].toUpperCase(); 
@@ -197,7 +189,7 @@ const autoUnit=(v:string|number|undefined,unittype:string=''):string|number|unde
       return parseFloat(v as string)+'deg';
     }
     if(typeof v === 'string'){
-      const m=v.replace(/[\,\)]+$/g, '').match(/^([\d.]+)([a-z\%]+)$/)
+      const m=v.replace(/[\,\)]+$/g, '').match(/^([-]?[\d.]+)([a-z\%]+)$/)
       if(m && m[2]){
         return v;
       }
@@ -274,7 +266,6 @@ const SetCompiledResult=(h:HTMLElement,cssObj:cssObject):Record<string,string>=>
     delete result[k];
   }
 
-  //console.log('SetCompiledResult',result)
   return result;
 }
 
@@ -345,9 +336,10 @@ export const middleCss=(h:HTMLElement,cssFrom:cssObject,cssTo:cssObject,progress
         }
       }else if(typeof toValue=='string' && typeof fromValue=='string'){
 
-        const toRaw:(number|string)[]=toValue.split(/([\d.]*)([^\d]*)/g).filter((v:string)=>v!=="").map((v:string)=>isNaN(parseFloat(v))?v:parseFloat(v))
-        const fromRaw:(number|string)[]=fromValue.split(/([\d.]*)([^\d]*)/g).filter((v:string)=>v!=="").map((v:string)=>isNaN(parseFloat(v))?v:parseFloat(v))
+        const toRaw:(number|string)[]=toValue.split(/([-]?[\d.]+)([a-z%]*)/g).filter((v:string)=>v!=="").map((v:string)=>isNaN(parseFloat(v))?v:parseFloat(v))
+        const fromRaw:(number|string)[]=fromValue.split(/([-]?[\d.]+)([a-z%]*)/g).filter((v:string)=>v!=="").map((v:string)=>isNaN(parseFloat(v))?v:parseFloat(v))
         const finalRaw:(number|string)[]=[];
+
 
         let formatMatch=true;
         if(toRaw.length===fromRaw.length){
@@ -375,7 +367,6 @@ export const middleCss=(h:HTMLElement,cssFrom:cssObject,cssTo:cssObject,progress
         }else{
           finalValue=fromValue as string;
         }
-        //console.log(formatMatch,fromValue,toValue,finalValue)
       }
       cssmix[kk]=finalValue;
     }
