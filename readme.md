@@ -162,7 +162,7 @@ added
 ```
 x,y,z
 scaleX,scaleY,scaleZ
-RotateX,RotateY,RotateZ
+rotateX,RotateY,RotateZ
 ```
 (auto transform to css transform,scale,rotate)
 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #blueBox {
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+			color: white;
+            position: relative;
+			--testx: 10px;
+			left:var(--testx);
+			#innerBox{
+				color: grey;
+				position: absolute;
+				top:var(--testx);
+			}
+        }
+    </style>
+</head>
+<body>
+    <div id="blueBox">
+        blue
+        <div id="innerBox">inner</div>
+    </div>
+    <script src="../dist/ani.js"></script>
+    <script>
+        ani.start('#blueBox').animate({['--testx']:'100px'},1000)
+    </script>
+    
+</body>
+</html>

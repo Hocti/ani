@@ -1,7 +1,8 @@
 {
 	"name": "ani-lib",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"description": "Tiny animation library like jquery animate function chain, with more features",
+	"main": "./dist/ani.cjs.js",
 	"module": "./dist/ani.esm.js",
 	"bundle": "./dist/ani.js",
 	"types": "./dist/ani.d.ts",
@@ -20,7 +21,11 @@
 	},
 	"author": "hocti",
 	"license": "MIT",
-	"keywords": ["animation", "animate", "chain"],
+	"keywords": [
+		"animation",
+		"animate",
+		"chain"
+	],
 	"readme": "README.md",
 	"bugs": "https://github.com/Hocti/ani/issues",
 	"scripts": {

@@ -9,8 +9,9 @@ import commonjs from '@rollup/plugin-commonjs';
 import esbuild from 'rollup-plugin-esbuild';
 import { dts } from "rollup-plugin-dts";
 import resolve from '@rollup/plugin-node-resolve';
+import { readFileSync } from 'fs';
 
-import repo from "./package.json" assert { type: 'json' };
+const repo = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -81,7 +82,7 @@ async function main() {
                 format: "esm",
                 file: repo.module,
                 globals
-            }/*,
+            },
             {
                 banner,
                 freeze,
@@ -89,7 +90,7 @@ async function main() {
                 format: "cjs",
                 file: repo.main,
                 globals
-            }*/
+            }
         ],
         plugins
     });

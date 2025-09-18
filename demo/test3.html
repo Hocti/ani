@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #blueBox {
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+            position: relative;
+            #innerBox {
+                width: 50px;
+                height: 50px;
+                background-color: yellow;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
+        #redBox {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background-color: red;
+        }
+        button{
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="blueBox">
+        blue
+        <div id="innerBox">inner</div>
+    </div>
+    <div id="redBox">red</div>
+    <hr>
+    <button id="btn1">Test</button>
+    <script src="../dist/ani.js"></script>
+    <script>
+         // ani.start('#redBox').css({rotateX:10,rotateY:110,rotateZ:210,rotate:310})
+         ani.start('#redBox').css({rotateX:110,rotateY:110})
+      // ani.start('#redBox').css({rotateZ:210})
+        
+    </script>
+    
+</body>
+</html>
