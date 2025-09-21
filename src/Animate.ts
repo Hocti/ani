@@ -136,7 +136,6 @@ export default class Animate extends AnimateQueueGroup {
 					if (progress == 0) {
 						this.beforeAni = getCss(this.element, queue.cssObj!);
 						this.targetAni = getTargetCss(this.element, queue.cssObj!);
-						console.log('aniBegin',this.element,queue.cssObj,this.beforeAni,this.targetAni)
 					}
 				} else if (queue.type == QueueType.fadeIn) {
 					if (progress == 0) {

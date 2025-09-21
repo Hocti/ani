@@ -272,7 +272,6 @@ const SetCompiledResult = (h: HTMLElement, cssObj: cssObject): Record<string, st
 		}
 		if (extraKey.includes("rotateX") || extraKey.includes("rotateY") || extraKey.includes("rotateZ")) {
 			const rotate = mixXYZ("rotate", css["rotate"], result["rotateX"], result["rotateY"], result["rotateZ"]);
-			console.log("rotate263", rotate, css["rotate"], result["rotateX"], result["rotateY"], result["rotateZ"]);
 			if (rotate) result["rotate"] = rotate;
 		}
 	}
