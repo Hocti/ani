@@ -82,14 +82,6 @@ async function main() {
                 format: "esm",
                 file: repo.module,
                 globals
-            },
-            {
-                banner,
-                freeze,
-                sourcemap,
-                format: "cjs",
-                file: repo.main,
-                globals
             }
         ],
         plugins

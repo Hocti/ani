@@ -22,7 +22,7 @@
     const fromSTR=`radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)`;
     const TOSTR=  `radial-gradient(circle, rgba(60,60,129,1) 0%, rgba(0,212,255,1) 63%, rgba(2,0,36,1) 100%)`;
 
-    ani.start('#bg').css({background: fromSTR}).now.mark('start').
+    ani.start('#bg').css({background: fromSTR}).now().mark('start').
     animate({background: TOSTR},2000).do(()=>{
         console.log('half loop')
     }).animate({background: fromSTR},2000).do(()=>{
