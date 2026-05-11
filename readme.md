@@ -176,7 +176,7 @@ Inherits all queue methods above, plus:
 
 | Method | Description |
 |--------|-------------|
-| `now` | Getter — execute the last queued command immediately instead of adding it to the queue |
+| `now()` | execute the last queued command immediately instead of adding it to the queue |
 | `resume()` | Resume a paused animation |
 | `stop()` | Stop and clear the animation |
 

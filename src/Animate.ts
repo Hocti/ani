@@ -56,7 +56,7 @@ export default class Animate extends AnimateQueueGroup {
 		add2List(this);
 	}
 	//
-	public get now(): this {
+	public now(): this {
 		const lastQ = this.queue.pop();
 		if (lastQ) {
 			if (queueWithTime.indexOf(lastQ.type) >= 0) {

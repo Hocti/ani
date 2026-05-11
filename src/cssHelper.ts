@@ -176,7 +176,7 @@ const autoUnit = (v: string | number | undefined, unittype: string = ""): string
 	}
 	if (typeof v === "string") {
 		const oldArr = v.split(" ");
-		if (oldArr.length > 1) {
+		if (oldArr.length > 1 && !v.includes("(")) {
 			const newArr: string[] = oldArr.map((v, k) => {
 				return autoUnit(v, unittype) as string;
 			});
