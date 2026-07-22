@@ -1,4 +1,4 @@
-import { QueueType, cssObject, aniOption, AnimateCall, AnimateQueue } from "./types";
+import { QueueType, cssObject, aniOption, timeOption, AnimateCall, AnimateQueue } from "./types";
 import TimeFunction from "./TimeFunction";
 
 const processOption = (option?: number | aniOption | undefined): aniOption => {
@@ -17,7 +17,14 @@ const processOption = (option?: number | aniOption | undefined): aniOption => {
 			easing: TimeFunction.easeInQuad,
 		};
 	}
-	return option as aniOption;
+	const opt = option as timeOption;
+	if (typeof opt.easing !== "function") {
+		if (opt.easing !== undefined) {
+			console.warn(`ani-lib: invalid easing "${opt.easing}", falling back to easeInQuad`);
+		}
+		return { ...opt, easing: TimeFunction.easeInQuad };
+	}
+	return opt;
 };
 
 export default class AnimateQueueGroup {
